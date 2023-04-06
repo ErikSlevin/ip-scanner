@@ -25,11 +25,12 @@ while ($currentIPNum[0] -le $endIPNum[0] -and
     
     # Prüfen Sie, ob der Host erreichbar ist, indem Sie versuchen, ihn zu pingen
     if (Test-Connection -ComputerName $currentIP.ToString() -Count 1 -Quiet) {
-        Write-Host -ForegroundColor Green "    Host gefunden: $($currentIP.ToString())"
+        Write-Host -ForegroundColor Green "             Host: $($currentIP.ToString())"
+
         try {
             # Auflösen des Hostnamens für die gefundene IP-Adresse
-            $hostName = ([System.Net.Dns]::GetHostEntry($currentIP).HostName)
-            Write-Host "Hostname gefunden: $hostName"
+            $hostName = "[" + [System.Net.Dns]::GetHostEntry($currentIP).HostName + "]"
+            Write-Host -ForegroundColor Green "         Hostname: $hostName"
         }
         catch {
             # Unterdrücken Sie den Fehler, wenn der Hostname nicht gefunden werden kann
@@ -38,9 +39,11 @@ while ($currentIPNum[0] -le $endIPNum[0] -and
 
         # Ermitteln Sie die MAC-Adresse des gefundenen Hosts
         $macAddress = (Get-NetNeighbor -IPAddress $currentIP.ToString()).LinkLayerAddress
+        Write-Host -ForegroundColor Green "              MAC: $macAddress"
+        Write-Host ""
         
         # Schreiben Sie den gefundenen Host, Hostnamen und MAC-Adresse in die Log-Datei
-        $logEntry = "$($currentIP.ToString()) $hostName [$macAddress]"
+        $logEntry = "$($currentIP.ToString()) [$macAddress] $hostName"
         Add-Content -Path $filePath -Value $logEntry
     }
     
