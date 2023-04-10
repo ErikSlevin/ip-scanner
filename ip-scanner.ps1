@@ -1,6 +1,6 @@
 # Benutzer auffordern, Start- und End-IP-Adresse einzugeben
-$startIPString = Read-Host "Geben Sie die Start-IP-Adresse ein"
-$endIPString = Read-Host "Geben Sie die End-IP-Adresse ein"
+$startIPString = "10.0.0.0"
+$endIPString = "10.0.0.90"
 
 $StartTime = $(get-date -Format u)
 # Konvertieren Sie die IP-Adressen in ein numerisches Format
@@ -11,13 +11,11 @@ $l = 1
 $totalIPs = (($endIPNum[0] - $startIPNum[0]) * 256 + ($endIPNum[1] - $startIPNum[1]) * 256 + ($endIPNum[2] - $startIPNum[2]) * 256 + ($endIPNum[3] - $startIPNum[3])) + 1
 $wertigkeit = [math]::Ceiling([math]::Log10($totalIPs))
 $foundIPs = @()
-$desktopPath = [Environment]::GetFolderPath("Desktop")
-$filePath = Join-Path $desktopPath "ip_scan.log"
+$filePath ="$env:USERPROFILE\Desktop\$startIPString-$endIPString-Results.log"
 New-Item -Path $filePath -ItemType File -Force |Out-Null
 $currentIPNum = $startIPNum
 
-
-
+Clear-Host
 
 while ($currentIPNum[0] -le $endIPNum[0] -and 
        $currentIPNum[1] -le $endIPNum[1] -and 
@@ -25,11 +23,10 @@ while ($currentIPNum[0] -le $endIPNum[0] -and
        $currentIPNum[3] -le $endIPNum[3]) {
     $currentIP = [System.Net.IPAddress]::new($currentIPNum)
     
-    $message = ""
-
-    # Prüfen Sie, ob der Host erreichbar ist, indem Sie versuchen, ihn zu pingen
+    $message = ""    
     $zahlMitNullen = "{0:d$($wertigkeit)}" -f $l
 
+   # Prüfen Sie, ob der Host erreichbar ist, indem Sie versuchen, ihn zu pingen
     if (Test-Connection -ComputerName $currentIP.ToString() -Count 1 -Quiet) {
         $message += $currentIP.ToString()
 
